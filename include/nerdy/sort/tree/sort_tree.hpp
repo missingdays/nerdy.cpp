@@ -1,5 +1,6 @@
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 namespace nd
 {
@@ -24,17 +25,28 @@ int size = 0;
 
 tp & build_tree(tp * arr, int a, int b, tree_node<tp> * tn)
 {
+    std::cout << a << "    " << b << " \n" ;
 	if (a == b)
         {
+
+            tn->_left = new tree_node<tp>;
+            tn->_right = new tree_node<tp>;
+            tn->_left->val = &arr[a];
+            tn->_right->val = &arr[a];
             tn->val = &arr[a];
+            if (a== 1)
+            {
+                std::cout << tn  << std::endl;
+                std::cout << *(tn->val) << std::endl;
+            }
             return arr[a];
         }
-        if (std::abs(a - b) == 1){
+       /* if (std::abs(a - b) == 1){
             if (arr[a] < arr[b]){
             tn->val = &arr[a]; return arr[a];}
             else{
             tn->val = &arr[b]; return arr[b];}
-        }
+        }*/
         else
         {
             int leftId = ( a + b ) / 2 + 1; /* For right side */
@@ -54,30 +66,75 @@ tp & build_tree(tp * arr, int a, int b, tree_node<tp> * tn)
         }
 }
 
-tree_node<tp> & find_node(int idx, path_home * ph, tree_node<tp> * current, int &a , int &b)
+tree_node<tp> * find_node(int idx, path_home & ph, tree_node<tp> * current, int a , int b)
 {
-	if (std::abs(a-b) != 1 || a!=b)
+    std::cout << a << "    " << b << " \n";
+	if (a != b)
 	{
-		ph->push_back(current);
+		ph.push_back(current);
+		std::cout << "hello \n";
+		std::cout << "ph value index " << *(ph[ph.size()-1]->val) << std::endl;
 		int mid = (a+b) / 2;
 		if ( idx <= mid )
 		{
-			find_node(idx , ph, &current->_left, a, mid);
+			return find_node(idx , ph, current->_left, a, mid);
 		}
 		else
 		{
-			find_node(idx, ph, &current->right, mid+1 , b);
+			return find_node(idx, ph, current->_right, mid+1 , b);
 		}
 	}
 	else
 	{
-		return current;			
+	    std::cout << "CURRENT  : "<<  current << "\n";
+		return current;
 	}
 }
 
+/*void go_back(path_home & ph, tree_node<tp> * current , tp * lastwin, int path_idx=0)
+{
+    std::cout << "SIZEOF PATHOHOME : " << ph.size() << std::endl;
+    for (int i = 0 ; i < ph.size(); i++)
+    {
+        std::cout << *(ph[i]->val) << std::endl;
+    }
+    std::cout << ph[ph.size()-path_idx-1]->_left << std::endl;
+    std::cout << current << std::endl;
+    std::cout << ph[ph.size()-path_idx-1]->_right << std::endl;
+    std::cout << std::endl;
+    if (current == ph[ph.size()-path_idx-1]->_left)
+    {
+        std::cout << "here";
+        if (*lastwin < *(ph[ph.size()-path_idx-1]->_right->val))
+        {
+            ph[ph.size()-path_idx-1]->val = lastwin;
+            go_back(ph, ph[ph.size()-path_idx-1], lastwin, path_idx+1);
+        }
+        else
+        {
+            return ;
+        }
+    }
+    else
+    {
+        std::cout << "else herle \n";
+        if (*lastwin < *(ph[ph.size()-path_idx-1]->_left->val))
+        {
+            std::cout << "last win " << *lastwin << std::endl;
+            ph[ph.size()-path_idx-1]->val = lastwin;
+            go_back(ph, ph[ph.size()-path_idx-1], lastwin, path_idx+1);
+        }
+        else
+        {
+            return ;
+        }
+    }
+    std::cout << "helo \n";
+}*/
+
 tp & rebuild_part(int a , int b, tree_node<tp> * tn, tp & new_value)
 {
-	
+
 }
 
 public :
@@ -106,18 +163,32 @@ void insert(int idx, tp  & value)
 
 }
 
-void change_value(int idx, tp & value)
+void change_value(int idx, tp  & value)
 {
-	int mid = size / 2;
-	if (idx < mid)
-	{
-		_arr[idx] = value;
-				
-	}
-	else
-	{
-		
-	}
+	/*static path_home ph;
+	int a = 0;
+	int b = size;
+
+	tree_node<tp> * FN = find_node(idx , ph, &root, a , b);
+	_arr[idx] = value;*/
+	_arr[idx] = value;
+	int mid = size / 2 ;
+	if ( idx <= mid )
+    {
+        tp & value = build_tree(_arr , 0, mid, root._left);
+        if (*(root._right->val) > value)
+        {
+            root.val = &value;
+        }
+    }
+    else
+    {
+        tp & value = build_tree(_arr, mid+1, size, root._right);
+        if (*(root._left->val) > value)
+        {
+            root.val = &value;
+        }
+    }
 }
 
 void push_back(tp & value);
@@ -129,10 +200,15 @@ void push_back(tp & value);
 
 
 
-/*int main () //test
+int main () //test
 {
-	int uiui [] = { 1, 2, 0 ,2, 5, 6};
+	int uiui [] = { 7, 2, 12 ,13, 1, 9};
+	int val = 88;
 	nd::sort_tree<int> st(uiui, 6);
+
+	st.change_value(1, val);
+
+		std::cout << st.get_value() << std::endl;
 	return 0;
 
-}*/
+}
