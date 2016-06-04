@@ -8,6 +8,13 @@ namespace nd
 template< typename tp > class sort_tree
 {
 
+public :
+    enum KEY
+{
+	MIN,
+	MAX
+};
+
 private :
 
 template <typename t> struct tree_node
@@ -22,23 +29,31 @@ typedef std::vector< tree_node<tp>* > path_home;
 tree_node<tp> root;
 tp * _arr = 0;
 int size = 0;
+KEY KEY_VAL;
+bool (sort_tree<tp>::*compare_function)(const tp & , const tp &) = 0;
+
+bool compare_min (const tp & a1, const tp & a2) /* For min */
+{
+	if (a1 < a2)
+		return true;
+	else
+		return false;
+}
+
+bool compare_max(const tp & a1, const tp & a2) /* For Max */
+{
+	if (a1 < a2)
+		return false;
+	else
+		return true;
+}
 
 tp & build_tree(tp * arr, int a, int b, tree_node<tp> * tn)
 {
     std::cout << a << "    " << b << " \n" ;
 	if (a == b)
-        {
-
-            tn->_left = new tree_node<tp>;
-            tn->_right = new tree_node<tp>;
-            tn->_left->val = &arr[a];
-            tn->_right->val = &arr[a];
+       {
             tn->val = &arr[a];
-            if (a== 1)
-            {
-                std::cout << tn  << std::endl;
-                std::cout << *(tn->val) << std::endl;
-            }
             return arr[a];
         }
        /* if (std::abs(a - b) == 1){
@@ -55,7 +70,7 @@ tp & build_tree(tp * arr, int a, int b, tree_node<tp> * tn)
             tn->_right = new tree_node<tp>;
             int * lSide = &(build_tree(arr, a, rightId, tn->_left));
             int * rSide = &(build_tree(arr, leftId, b, tn->_right));
-            if (*lSide < *rSide) {
+            if ((*this.*compare_function)(*lSide, *rSide)) {
                 tn->val = lSide;
                 return *lSide;
             }
@@ -139,13 +154,16 @@ tp & rebuild_part(int a , int b, tree_node<tp> * tn, tp & new_value)
 
 public :
 
-sort_tree(tp * arr ,int size_)
+sort_tree(tp * arr ,int size_,  KEY KEY_VAL_ = KEY::MIN) : KEY_VAL(KEY_VAL_)
 {
+    if (KEY_VAL_ == KEY::MIN)
+		compare_function = &sort_tree<tp>::compare_min;
+	else
+		compare_function = &sort_tree<tp>::compare_max;
 	build_tree(arr, 0, size_, &root);
 	_arr = arr;
 	size = size_;
 }
-
 
 sort_tree()
 {
@@ -204,11 +222,11 @@ int main () //test
 {
 	int uiui [] = { 7, 2, 12 ,13, 1, 9};
 	int val = 88;
-	nd::sort_tree<int> st(uiui, 6);
+	nd::sort_tree<int> st(uiui, 6, nd::sort_tree<int>::KEY::MAX);
 
 	st.change_value(1, val);
 
-		std::cout << st.get_value() << std::endl;
+		std::cout << std::endl << std::endl << st.get_value() << std::endl;
 	return 0;
 
 }
