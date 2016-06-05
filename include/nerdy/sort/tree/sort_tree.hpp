@@ -152,6 +152,28 @@ tp & rebuild_part(int a , int b, tree_node<tp> * tn, tp & new_value)
 
 }
 
+void destroy_tree(tree_node<tp> * t)
+{
+    if (t->_left != NULL)
+    {
+        destroy_tree(t->_left);
+    }
+    if (t->_right != NULL)
+    {
+        destroy_tree(t->_right);
+    }
+    if (t->_left == NULL)
+    {
+        delete t;
+        return;
+    }
+    if (t->_right == NULL)
+    {
+        delete t;
+        return;
+    }
+}
+
 public :
 
 sort_tree(tp * arr ,int size_,  KEY KEY_VAL_ = KEY::MIN) : KEY_VAL(KEY_VAL_)
@@ -168,6 +190,11 @@ sort_tree(tp * arr ,int size_,  KEY KEY_VAL_ = KEY::MIN) : KEY_VAL(KEY_VAL_)
 sort_tree()
 {
 
+}
+
+~sort_tree()
+{
+    destroy_tree(&root);
 }
 
 const tp & get_value ()
