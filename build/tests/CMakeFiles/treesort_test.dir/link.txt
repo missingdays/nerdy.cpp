@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/treesort_test.dir/treesort_test.cpp.o  -o treesort_test -rdynamic 
